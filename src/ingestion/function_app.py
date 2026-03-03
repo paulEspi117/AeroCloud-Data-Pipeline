@@ -12,7 +12,7 @@ app = func.FunctionApp()
 @app.timer_trigger(schedule="0 */5 * * * *", arg_name="myTimer", run_on_startup=False)
 def fetch_opensky_data(myTimer: func.TimerRequest) -> None:
     if myTimer.past_due:
-        logging.info('Le timer est en retard !')
+        logging.info('Le timer est en retard !') 
 
     logging.info('Exécution de la fonction Azure pour récupérer les données OpenSky.')
 
