@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from azure.storage.filedatalake import DataLakeServiceClient
 
-app = func.FunctionApp() 
+app = func.FunctionApp()
 
 # Déclenchement toutes les 5 minutes
 @app.timer_trigger(schedule="0 */5 * * * *", arg_name="myTimer", run_on_startup=False)
