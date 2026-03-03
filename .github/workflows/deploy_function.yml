@@ -1,0 +1,46 @@
+name: Deploy Python Function to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/ingestion/**'
+
+env:
+  AZURE_FUNCTIONAPP_NAME: 'aerocloud-ingestion-espinasse' # TODO: Le vrai nom de ta fonction !
+  PYTHON_VERSION: '3.11' # Ou la version que tu as choisie (3.14 d'après tes logs précédents)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. On récupère le code de ton dépôt GitHub
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. On configure l'environnement Python sur la machine virtuelle de GitHub
+    - name: Setup Python version
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    # 3. On installe tes dépendances (Requirements) pour que tout fonctionne
+    - name: Install dependencies
+      run: |
+        cd src/ingestion
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. L'étape magique : Déploiement officiel vers Azure !
+    - name: 'Deploy to Azure Functions'
+      uses: Azure/functions-action@v1
+      id: deploy-to-function
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        slot-name: 'Production'
+        package: 'src/ingestion/'
+        publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PROFILE }}
